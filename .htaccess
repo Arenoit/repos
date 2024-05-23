@@ -1,0 +1,151 @@
+# ----------------------------------------------------------------------
+
+# Rewrite engine
+
+# ----------------------------------------------------------------------
+
+
+
+# Turning on the rewrite engine is necessary for the following rules and features.
+
+# FollowSymLinks must be enabled for this to work.
+
+<IfModule mod_rewrite.c>
+
+	RewriteEngine On
+
+    # Replace extensions
+
+    RewriteRule ^api.php$ - [QSA,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    RewriteCond %{REQUEST_FILENAME}.php -f
+
+    RewriteRule ^(.*)$ $1.php
+
+    RewriteCond %{THE_REQUEST} "^[^ ]* .*?\.php[? ].*$"
+
+    RewriteRule .* - [L,R=404]
+
+    #RewriteRule ^([a-z]+)/?$ $1.php [NC]
+    # Redirect Trailing Slashes parameter ?i=1 violate TOS...
+    RewriteCond %{QUERY_STRING} ^(.*)i=[^&]+(.*)$ [NC]
+    RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+
+	# Allow access to files and paths
+
+	RewriteRule \.(js|html|css|swf|svg|jpg|jpeg|png|pdf)(\?|$) - [QSA,L]
+
+    RewriteRule ^css/ - [R=404,L]
+
+    RewriteRule ^js/ - [R=404,L]
+
+    RewriteRule ^images/ - [R=404,L]
+
+    RewriteRule ^fpdf/ - [R=404,L]
+
+    RewriteRule ^PHPMailer/ - [R=404,L]
+
+    RewriteRule ^session/login.php$ - [QSA,L]
+
+    RewriteRule ^session/logout.php$ - [QSA,L]
+
+    RewriteRule ^session/signin.php$ - [QSA,L]
+
+    RewriteRule ^session/meeting.php$ - [QSA,L]
+
+    RewriteRule ^session/identifier.php$ - [QSA,L]
+
+    RewriteRule ^session/activate.php$ - [QSA,L]
+
+    RewriteRule ^session/reset.php$ - [QSA,L]
+
+    RewriteRule ^session/ - [R=404,L]
+
+    RewriteRule ^database/home.php$ - [QSA,L]
+
+    RewriteRule ^database/reset.php$ - [QSA,L]
+
+    RewriteRule ^database/check.php$ - [QSA,L]
+
+    RewriteRule ^database/solicitude.php$ - [QSA,L]
+
+    RewriteRule ^database/deletesolici.php$ - [QSA,L]
+
+    RewriteRule ^database/config.php$ - [QSA,L]
+
+    RewriteRule ^database/analytics.php$ - [QSA,L]
+
+    RewriteRule ^database/downloads.php$ - [QSA,L]
+
+    RewriteRule ^database/changepass.php$ - [QSA,L]
+
+    RewriteRule ^database/upload.php$ - [QSA,L]
+
+    RewriteRule ^database/photouser.php$ - [QSA,L]
+
+    RewriteRule ^database/account.php$ - [QSA,L]
+
+    RewriteRule ^database/kwere.php$ - [QSA,L]
+
+    RewriteRule ^database/insert.php$ - [QSA,L]
+
+    RewriteRule ^database/register.php$ - [QSA,L]
+
+    RewriteRule ^database/delete.php$ - [QSA,L]
+
+    RewriteRule ^database/allmsg.php$ - [QSA,L]
+    
+    RewriteRule ^database/searchmsg.php$ - [QSA,L]
+    
+    RewriteRule ^database/msg.php$ - [QSA,L]
+
+    RewriteRule ^database/allnotify.php$ - [QSA,L]
+    
+    RewriteRule ^database/sendmsg.php$ - [QSA,L]
+
+    RewriteRule ^database/notify.php$ - [QSA,L]
+
+    RewriteRule ^database/(.*)$ - [F,L]
+
+    php_value upload_max_filesize 128M
+    php_value post_max_size 128M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+
+	# Ensure Authorization header is passed along
+
+    RewriteCond %{HTTP:Authorization} .
+
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+</IfModule>
+
+<FilesMatch "\.pdf$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+#<Files "account.php">
+#    SetEnvIf Request_URI "^/steward/account.php$" ACTIVAR_CONFIG
+#</Files>
+
+#<IfDefine ACTIVAR_CONFIG>
+    # Configuración específica que deseas activar solo para archivo.php
+#    <If "%{QUERY_STRING} =~ /\.(jpeg|jpg|png)$/">
+#        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+#        Header set Pragma "no-cache"
+#        Header set Expires "0"
+#    </If>
+#</IfDefine>
+
+<IfModule !mod_rewrite.c>
+    # If we don't have mod_rewrite installed, all 404's
+    # can be sent to index.php, and everything works as normal.
+    ErrorDocument 403 https://errors.infinityfree.net/errors/403/
+    ErrorDocument 404 https://errors.infinityfree.net/errors/404/
+    ErrorDocument 500 https://errors.infinityfree.net/errors/500/
+</IfModule>
